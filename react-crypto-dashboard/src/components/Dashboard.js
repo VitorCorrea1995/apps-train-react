@@ -1,45 +1,53 @@
-// TO DO
-/*
-<Flex flexWrap='wrap' w='100vw' p={4}>
-                <Box w="75%">
+import {
+    Flex,
+    Stat,
+    StatLabel,
+    StatNumber,
+    StatHelpText,
+    StatArrow,
+    StatGroup,
+    List,
+    ListIcon,
+    ListItem,
+    Text
+} from '@chakra-ui/react';
+import {AiFillStar} from 'react-icons/ai';
+
+import React from 'react';
+
+const Dashboard = ({currencyStatus, news}) => {
+    return (
+        <Flex flexWrap='wrap' w='100%' justifyContent='between' alignItems='center' mt='10'>
+            <Flex justifyContent='center' alignItems='center' w='50%'>
                 <StatGroup>
                     <Stat>
-                        <StatLabel>Sent</StatLabel>
-                        <StatNumber>345,670</StatNumber>
-                        <StatHelpText>
-                        <StatArrow type='increase' />
-                        23.36%
-                        </StatHelpText>
-                    </Stat>
-                    <Stat>
-                        <StatLabel>Clicked</StatLabel>
-                        <StatNumber>45</StatNumber>
-                        <StatHelpText>
-                        <StatArrow type='decrease' />
-                        9.05%
-                        </StatHelpText>
+                            <StatLabel>Exchange Rate</StatLabel>
+                            <StatNumber>{currencyStatus ? currencyStatus['5. Exchange Rate'] : '-'}</StatNumber>
+                            <StatLabel>Bid Price</StatLabel>
+                            <StatNumber>{currencyStatus ? currencyStatus['8. Bid Price'] : '-'}</StatNumber>
+                            <StatLabel>Ask Price</StatLabel>
+                            <StatNumber>{currencyStatus ? currencyStatus['9. Ask Price'] : '-'}</StatNumber>
+                            <StatHelpText>
+                            <StatArrow type={currencyStatus['9. Ask Price'] >= currencyStatus['8. Bid Price'] ? 'increase' : 'decrease'}/>
+                                {(currencyStatus['9. Ask Price'] - currencyStatus['8. Bid Price']) / 100} %
+                            </StatHelpText>
                     </Stat>
                 </StatGroup>
-                </Box>
-                <Box w="25%">
-                <List spacing={3}>
-                    <ListItem>
-                        <ListIcon as={AiFillStar} color='green.500' />
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit
-                    </ListItem>
-                    <ListItem>
-                        <ListIcon as={AiFillStar} color='green.500' />
-                        Assumenda, quia temporibus eveniet a libero incidunt suscipit
-                    </ListItem>
-                    <ListItem>
-                        <ListIcon as={AiFillStar} color='green.500' />
-                        Quidem, ipsam illum quis sed voluptatum quae eum fugit earum
-                    </ListItem>
-                    <ListItem>
-                        <ListIcon as={AiFillStar} color='green.500' />
-                        Quidem, ipsam illum quis sed voluptatum quae eum fugit earum
-                    </ListItem>
-                    </List>
-                </Box>
             </Flex>
-*/
+            <Flex justifyContent='center' alignItems='center' w='50%' maxHeight='300px' overflow='auto'>
+                <List>
+                    {news.map((siteNew, index) => (
+                        <ListItem key={index}>
+                            <Flex>
+                                <ListIcon mt='1' as={AiFillStar} color='green.500' />
+                                <Text fontSize='18px' color='teal.300' fontWeight='bold'>{siteNew.title}</Text>
+                            </Flex>
+                            <a href={siteNew.url} color='blue'>{siteNew.url}</a>
+                        </ListItem>))}
+                </List>
+            </Flex>
+        </Flex>
+    )
+}
+
+export default Dashboard;

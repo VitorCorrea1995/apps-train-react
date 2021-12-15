@@ -1,70 +1,55 @@
-import {
-    ChakraProvider,
-    Box,
-    Flex,
-    Stat,
-    StatLabel,
-    StatNumber,
-    StatHelpText,
-    StatArrow,
-    StatGroup,
-    List,
-    ListIcon,
-    ListItem
-} from '@chakra-ui/react'
-import {
-    AiFillStar
-} from 'react-icons/ai';
-import React from 'react';
+import {ChakraProvider, Flex, Heading, Alert} from '@chakra-ui/react';
+import {WarningIcon} from '@chakra-ui/icons';
+import React, {useState} from 'react';
 
 import theme from './theme';
 import './App.css';
 
+import Dashboard from './components/Dashboard';
+import Form from './components/Form';
+import {getCryptoCurrency, getCryptoNews} from './services/http-service.js';
+import {CURRENCY_OPTIONS, WEBSITE_NEWS_OPTIONS, ERROR_MSG} from './util/constants';
 
-function App() {
+const App = () => {
+    const [selectedCurrency, setSelectedCurrency] = useState(CURRENCY_OPTIONS[0].value);
+    const [selectedWebsiteNews, setSelectedWebsiteNews] = useState(WEBSITE_NEWS_OPTIONS[0].value);
+    const [currencyStatus, setCurrencyStatus] = useState({});
+    const [news, setNews] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [hasError, setHasError] = useState(false);
+
+    const handleSelectedCurrency = async () => {
+        try {
+            setHasError(false);
+            setIsLoading(true);
+            setCurrencyStatus(await getCryptoCurrency(selectedCurrency));
+            setIsLoading(false);
+        } catch (error) {
+            setHasError(true);
+        }
+    }
+
+    const handleSelectedWebsiteNews = async () => {
+        try {
+            setHasError(false);
+            setIsLoading(true);
+            setNews(await getCryptoNews(selectedWebsiteNews));
+            setIsLoading(false);
+        } catch (error) {
+            setHasError(true);
+        }
+    }
+
     return (
         <ChakraProvider theme={theme}>
-            <Flex flexWrap='wrap' w='100vw' p={4}>
-                <Box w="75%">
-                <StatGroup>
-                    <Stat>
-                        <StatLabel>Sent</StatLabel>
-                        <StatNumber>345,670</StatNumber>
-                        <StatHelpText>
-                        <StatArrow type='increase' />
-                        23.36%
-                        </StatHelpText>
-                    </Stat>
-                    <Stat>
-                        <StatLabel>Clicked</StatLabel>
-                        <StatNumber>45</StatNumber>
-                        <StatHelpText>
-                        <StatArrow type='decrease' />
-                        9.05%
-                        </StatHelpText>
-                    </Stat>
-                </StatGroup>
-                </Box>
-                <Box w="25%">
-                <List spacing={3}>
-                    <ListItem>
-                        <ListIcon as={AiFillStar} color='green.500' />
-                        Lorem ipsum dolor sit amet, consectetur adipisicing elit
-                    </ListItem>
-                    <ListItem>
-                        <ListIcon as={AiFillStar} color='green.500' />
-                        Assumenda, quia temporibus eveniet a libero incidunt suscipit
-                    </ListItem>
-                    <ListItem>
-                        <ListIcon as={AiFillStar} color='green.500' />
-                        Quidem, ipsam illum quis sed voluptatum quae eum fugit earum
-                    </ListItem>
-                    <ListItem>
-                        <ListIcon as={AiFillStar} color='green.500' />
-                        Quidem, ipsam illum quis sed voluptatum quae eum fugit earum
-                    </ListItem>
-                    </List>
-                </Box>
+            <Flex w='100vw' h='100vh' flexDirection='column' className='app'>
+                {hasError ? <Alert status='error'><WarningIcon mr='5'/>{ERROR_MSG}</Alert> : ''}
+                <Heading mx='auto' my='10'>Crypto Exchange Dashboard</Heading>
+                <Dashboard currencyStatus={currencyStatus} news={news} />
+                <Form isLoading={isLoading}
+                    setSelectedCurrency={setSelectedCurrency} setSelectedWebsiteNews={setSelectedWebsiteNews}
+                    handleSelectedCurrency={handleSelectedCurrency} handleSelectedWebsiteNews={handleSelectedWebsiteNews}
+                />
             </Flex>
         </ChakraProvider>
     );
